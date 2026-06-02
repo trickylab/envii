@@ -1,0 +1,66 @@
+version: 2
+
+project_name: envii
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: envii
+    main: ./cmd/envii
+    binary: envii
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: default
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+brews:
+  - repository:
+      owner: Trickster-ID
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    homepage: "https://github.com/Trickster-ID/envii"
+    description: "Encrypted .env & secrets manager with a TUI"
+    license: "MIT"
+    commit_author:
+      name: goreleaser-bot
+      email: bot@example.com
+
+dockers:
+  - image_templates:
+      - "ghcr.io/Trickster-ID/envii:{{ .Version }}"
+      - "ghcr.io/Trickster-ID/envii:latest"
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--label=org.opencontainers.image.source=https://github.com/Trickster-ID/envii"
+
+release:
+  prerelease: auto

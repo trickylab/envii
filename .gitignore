@@ -1,0 +1,13 @@
+# Binaries
+/envii
+/dist/
+*.exe
+
+# Local vault (never commit secrets)
+*.age
+vault.age
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
