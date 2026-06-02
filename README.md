@@ -6,7 +6,6 @@ Stop scattering `.env` files across projects and pasting secrets into Slack.
 `envii` keeps all your environment variables in a single **encrypted** vault and
 lets you browse, edit, and inject them straight from your terminal.
 
-<!-- TODO: record a demo GIF (e.g. with vhs) and drop it here -->
 <p align="center">
   <img src="docs/demo.gif" alt="envii demo" width="700">
 </p>

@@ -101,6 +101,10 @@ func resolveEnv(v *model.Vault, projectName, envName string) (*model.Env, error)
 }
 
 func promptPassphrase(label string) (string, error) {
+	// Allow bypassing the interactive prompt via env var (useful for demos/CI).
+	if p := os.Getenv("ENVII_PASSPHRASE"); p != "" {
+		return p, nil
+	}
 	fmt.Fprint(os.Stderr, label)
 	b, err := term.ReadPassword(int(os.Stdin.Fd()))
 	fmt.Fprintln(os.Stderr)
