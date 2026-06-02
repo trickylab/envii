@@ -24,12 +24,27 @@ func (m Model) View() string {
 	b.WriteString(titleStyle.Render("envii"))
 	b.WriteString("  ")
 	b.WriteString(breadcrumbStyle.Render(m.breadcrumb()))
+	if m.search != "" {
+		b.WriteString("  ")
+		b.WriteString(helpStyle.Render("filter: " + m.search))
+	}
 	b.WriteString("\n\n")
 
 	b.WriteString(m.list())
 	b.WriteString("\n")
 
-	if m.inputMode != inputNone {
+	switch m.inputMode {
+	case inputConfirmDelete:
+		b.WriteString(errorStyle.Render("Delete " + m.deleteTarget + "?"))
+		b.WriteString("\n")
+		b.WriteString(inputBoxStyle.Render(m.input.View()))
+		b.WriteString("\n")
+	case inputSearch:
+		b.WriteString(inputBoxStyle.Render("/ " + m.input.View()))
+		b.WriteString("\n")
+	case inputNone:
+		// nothing
+	default:
 		b.WriteString(inputBoxStyle.Render(m.input.View()))
 		b.WriteString("\n")
 	}
@@ -61,6 +76,7 @@ func (m Model) breadcrumb() string {
 }
 
 func (m Model) list() string {
+	q := strings.ToLower(m.search)
 	var rows []string
 	switch m.level {
 	case levelProjects:
@@ -68,6 +84,9 @@ func (m Model) list() string {
 			return normalStyle.Render("  no projects yet — press 'a' to add one")
 		}
 		for i, p := range m.vault.Projects {
+			if q != "" && !strings.Contains(strings.ToLower(p.Name), q) {
+				continue
+			}
 			rows = append(rows, m.row(i == m.pIdx, fmt.Sprintf("%s (%d envs)", p.Name, len(p.Envs))))
 		}
 	case levelEnvs:
@@ -76,6 +95,9 @@ func (m Model) list() string {
 			return normalStyle.Render("  no environments — press 'a' to add one")
 		}
 		for i, e := range envs {
+			if q != "" && !strings.Contains(strings.ToLower(e.Name), q) {
+				continue
+			}
 			rows = append(rows, m.row(i == m.eIdx, fmt.Sprintf("%s (%d vars)", e.Name, len(e.Vars))))
 		}
 	case levelVars:
@@ -84,12 +106,18 @@ func (m Model) list() string {
 			return normalStyle.Render("  no variables — press 'a' to add one")
 		}
 		for i, v := range vars {
+			if q != "" && !strings.Contains(strings.ToLower(v.Key), q) && !strings.Contains(strings.ToLower(v.Value), q) {
+				continue
+			}
 			val := v.Value
 			if v.Secret && !m.reveal[i] {
 				val = secretStyle.Render(mask(v.Value))
 			}
 			rows = append(rows, m.row(i == m.vIdx, fmt.Sprintf("%-24s %s", v.Key, val)))
 		}
+	}
+	if len(rows) == 0 && q != "" {
+		return normalStyle.Render(fmt.Sprintf("  no results for %q", q))
 	}
 	return strings.Join(rows, "\n")
 }
@@ -102,11 +130,10 @@ func (m Model) row(selected bool, text string) string {
 }
 
 func (m Model) help() string {
-	common := "↑/↓ move • enter open • esc back • a add • d delete • s save • q quit"
 	if m.level == levelVars {
-		return "↑/↓ move • esc back • a add • e edit • d del • r reveal • c copy • s save • q quit"
+		return "↑/↓ move • esc back • a add • e edit • d del • / search • r reveal • c copy • s save • q quit"
 	}
-	return common
+	return "↑/↓ move • enter open • esc back • a add • d delete • / search • s save • q quit"
 }
 
 func mask(s string) string {

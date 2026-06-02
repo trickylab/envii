@@ -33,6 +33,8 @@ const (
 	inputAddVarKey
 	inputAddVarValue
 	inputEditValue
+	inputSearch
+	inputConfirmDelete
 )
 
 // Model is the root Bubble Tea model.
@@ -48,9 +50,12 @@ type Model struct {
 
 	reveal map[int]bool // var index -> revealed
 
-	input     textinput.Model
-	inputMode inputMode
+	input      textinput.Model
+	inputMode  inputMode
 	pendingKey string // buffer for add-var key
+
+	search       string // active search query
+	deleteTarget string // label of item pending delete confirm
 
 	width  int
 	height int
@@ -117,7 +122,9 @@ func (m Model) updateNav(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "e":
 		m.startEdit()
 	case "d":
-		m.deleteCurrent()
+		m.startDeleteConfirm()
+	case "/":
+		m.startSearch()
 	case "r":
 		m.toggleReveal()
 	case "c":
@@ -224,6 +231,41 @@ type saveResult struct{ err error }
 
 // --- input handling ---
 
+func (m *Model) startDeleteConfirm() {
+	var label string
+	switch m.level {
+	case levelProjects:
+		if len(m.vault.Projects) == 0 {
+			return
+		}
+		label = fmt.Sprintf("project %q", m.vault.Projects[m.pIdx].Name)
+	case levelEnvs:
+		p := m.currentProject()
+		if len(p.Envs) == 0 {
+			return
+		}
+		label = fmt.Sprintf("env %q", p.Envs[m.eIdx].Name)
+	case levelVars:
+		e := m.currentEnv()
+		if len(e.Vars) == 0 {
+			return
+		}
+		label = fmt.Sprintf("var %q", e.Vars[m.vIdx].Key)
+	}
+	m.deleteTarget = label
+	m.inputMode = inputConfirmDelete
+	m.input.SetValue("")
+	m.input.Placeholder = "y to confirm"
+	m.input.Focus()
+}
+
+func (m *Model) startSearch() {
+	m.inputMode = inputSearch
+	m.input.SetValue(m.search)
+	m.input.Placeholder = "search..."
+	m.input.Focus()
+}
+
 func (m *Model) startAdd() {
 	m.input.SetValue("")
 	m.input.Focus()
@@ -253,11 +295,28 @@ func (m *Model) startEdit() {
 func (m Model) updateInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "esc":
+		if m.inputMode == inputSearch {
+			m.search = "" // clear filter on esc
+		}
 		m.inputMode = inputNone
 		m.input.Blur()
 		return m, nil
 	case "enter":
+		if m.inputMode == inputSearch {
+			// Commit search query and close input box; filter stays active.
+			m.search = m.input.Value()
+			m.inputMode = inputNone
+			m.input.Blur()
+			return m, nil
+		}
 		return m.commitInput()
+	}
+	// For search: update filter live as user types.
+	if m.inputMode == inputSearch {
+		var cmd tea.Cmd
+		m.input, cmd = m.input.Update(msg)
+		m.search = m.input.Value()
+		return m, cmd
 	}
 	var cmd tea.Cmd
 	m.input, cmd = m.input.Update(msg)
@@ -267,6 +326,16 @@ func (m Model) updateInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 func (m Model) commitInput() (tea.Model, tea.Cmd) {
 	val := strings.TrimSpace(m.input.Value())
 	switch m.inputMode {
+	case inputConfirmDelete:
+		m.inputMode = inputNone
+		m.input.Blur()
+		m.deleteTarget = ""
+		if strings.ToLower(val) == "y" {
+			m.deleteCurrent()
+		} else {
+			m.status = "delete cancelled"
+		}
+		return m, nil
 	case inputAddProject:
 		if val != "" {
 			m.vault.Projects = append(m.vault.Projects, &model.Project{Name: val})

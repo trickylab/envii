@@ -11,13 +11,27 @@ import (
 
 // runCmd: envii run <project> <env> -- <command...>
 func runCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "run <project> <env> -- <command> [args...]",
 		Short: "Run a command with the env's variables injected",
-		Args:  cobra.MinimumNArgs(3),
-		RunE: func(_ *cobra.Command, args []string) error {
+		Example: `  envii run my-api dev -- npm start
+  envii run my-api prod -- go run ./cmd/server`,
+		// Accept 2+ args; the command after -- is captured via ArgsLenAtDash.
+		Args: cobra.MinimumNArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
 			projectName, envName := args[0], args[1]
-			argv := args[2:]
+
+			// Support both styles:
+			//   envii run proj env -- cmd arg   (preferred)
+			//   envii run proj env cmd arg       (legacy)
+			var argv []string
+			if dash := cmd.ArgsLenAtDash(); dash >= 0 {
+				argv = args[dash:]
+			} else if len(args) > 2 {
+				argv = args[2:]
+			} else {
+				return fmt.Errorf("no command provided — use: envii run %s %s -- <command>", projectName, envName)
+			}
 
 			v, _, _, err := loadVault()
 			if err != nil {
@@ -36,6 +50,7 @@ func runCmd() *cobra.Command {
 			return nil
 		},
 	}
+	return cmd
 }
 
 // exportCmd: envii export <project> <env> [-o file]
