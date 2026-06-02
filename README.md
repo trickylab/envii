@@ -36,7 +36,7 @@ Download from [Releases](https://github.com/Trickster-ID/envii/releases) for mac
 
 ### Docker
 ```sh
-docker run --rm -it -v "$HOME/.config/envii:/root/.config/envii" ghcr.io/Trickster-ID/envii
+docker run --rm -it -v "$HOME/.config/envii:/root/.config/envii" ghcr.io/trickster-id/envii
 ```
 
 ## Usage

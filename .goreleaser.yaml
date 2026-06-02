@@ -56,8 +56,8 @@ brews:
 
 dockers:
   - image_templates:
-      - "ghcr.io/Trickster-ID/envii:{{ .Version }}"
-      - "ghcr.io/Trickster-ID/envii:latest"
+      - "ghcr.io/trickster-id/envii:{{ .Version }}"
+      - "ghcr.io/trickster-id/envii:latest"
     dockerfile: Dockerfile
     build_flag_templates:
       - "--label=org.opencontainers.image.source=https://github.com/Trickster-ID/envii"
