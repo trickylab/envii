@@ -22,20 +22,20 @@ lets you browse, edit, and inject them straight from your terminal.
 
 ### Homebrew
 ```sh
-brew install Trickster-ID/tap/envii
+brew install trickylab/tap/envii
 ```
 
 ### go install
 ```sh
-go install github.com/Trickster-ID/envii/cmd/envii@latest
+go install github.com/trickylab/envii/cmd/envii@latest
 ```
 
 ### Pre-built binaries
-Download from [Releases](https://github.com/Trickster-ID/envii/releases) for macOS, Linux, and Windows.
+Download from [Releases](https://github.com/trickylab/envii/releases) for macOS, Linux, and Windows.
 
 ### Docker
 ```sh
-docker run --rm -it -v "$HOME/.config/envii:/root/.config/envii" ghcr.io/trickster-id/envii
+docker run --rm -it -v "$HOME/.config/envii:/root/.config/envii" ghcr.io/trickylab/envii
 ```
 
 ## Usage

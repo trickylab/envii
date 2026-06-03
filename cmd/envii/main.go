@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Trickster-ID/envii/internal/cli"
+	"github.com/trickylab/envii/internal/cli"
 )
 
 // version is set at build time via -ldflags.
