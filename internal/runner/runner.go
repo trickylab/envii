@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Trickster-ID/envii/internal/model"
+	"github.com/trickylab/envii/internal/model"
 )
 
 // Run executes argv with the env vars injected on top of the current

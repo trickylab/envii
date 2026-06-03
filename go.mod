@@ -1,4 +1,4 @@
-module github.com/Trickster-ID/envii
+module github.com/trickylab/envii
 
 go 1.26.3
 

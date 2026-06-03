@@ -10,8 +10,8 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/Trickster-ID/envii/internal/model"
-	"github.com/Trickster-ID/envii/internal/store"
+	"github.com/trickylab/envii/internal/model"
+	"github.com/trickylab/envii/internal/store"
 )
 
 // level represents the current navigation depth.
@@ -43,10 +43,10 @@ type Model struct {
 	store      *store.Store
 	passphrase string
 
-	level   level
-	pIdx    int // selected project index
-	eIdx    int // selected env index
-	vIdx    int // selected var index
+	level level
+	pIdx  int // selected project index
+	eIdx  int // selected env index
+	vIdx  int // selected var index
 
 	reveal map[int]bool // var index -> revealed
 

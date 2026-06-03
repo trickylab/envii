@@ -5,7 +5,7 @@ Thanks for your interest! Contributions of all kinds are welcome.
 ## Getting started
 
 ```sh
-git clone https://github.com/Trickster-ID/envii
+git clone https://github.com/trickylab/envii
 cd envii
 go build ./...
 go test ./...
