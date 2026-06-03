@@ -1,7 +1,10 @@
 // Package model defines the core data structures for envii.
 package model
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // Vault is the top-level container persisted to disk (encrypted).
 type Vault struct {
@@ -62,4 +65,15 @@ func (e *Env) Map() map[string]string {
 		m[v.Key] = v.Value
 	}
 	return m
+}
+
+// IsSecret guesses whether a key likely holds a secret value.
+func IsSecret(key string) bool {
+	k := strings.ToUpper(key)
+	for _, hint := range []string{"SECRET", "TOKEN", "PASSWORD", "KEY", "PRIVATE", "CREDENTIAL", "API"} {
+		if strings.Contains(k, hint) {
+			return true
+		}
+	}
+	return false
 }

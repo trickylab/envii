@@ -52,6 +52,7 @@ On first run you'll set a passphrase and an empty vault is created.
 | `enter` `l`| Open project / environment      |
 | `esc` `h`  | Go back                         |
 | `a`        | Add project / env / variable    |
+| `i`        | Import `.env` into current env   |
 | `e`        | Edit variable value             |
 | `d`        | Delete selected item            |
 | `r`        | Reveal / hide a secret value    |
@@ -71,6 +72,14 @@ injected — no `.env` file written.
 envii export my-api prod              # print to stdout
 envii export my-api prod -o .env      # write to a file
 ```
+
+### Import from a `.env` file
+```sh
+envii import -f .env.production
+envii import -f .env.staging --overwrite
+```
+The import command prompts you to select or create a project and environment.
+Existing keys are skipped by default; use `--overwrite` to replace them.
 
 ## How it works
 
