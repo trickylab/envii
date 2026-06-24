@@ -7,7 +7,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/Trickster-ID/envii/internal/model"
+	"github.com/trickylab/envii/internal/model"
 )
 
 // ParseDotenv parses .env content into vault variables.

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Trickster-ID/envii/internal/model"
+	"github.com/trickylab/envii/internal/model"
 )
 
 func TestPromptProjectSelectExistingByNumber(t *testing.T) {

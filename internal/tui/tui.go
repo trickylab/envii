@@ -11,9 +11,9 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/Trickster-ID/envii/internal/model"
-	"github.com/Trickster-ID/envii/internal/runner"
-	"github.com/Trickster-ID/envii/internal/store"
+	"github.com/trickylab/envii/internal/model"
+	"github.com/trickylab/envii/internal/runner"
+	"github.com/trickylab/envii/internal/store"
 )
 
 // level represents the current navigation depth.

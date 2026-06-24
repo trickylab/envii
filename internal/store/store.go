@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/Trickster-ID/envii/internal/crypto"
-	"github.com/Trickster-ID/envii/internal/model"
+	"github.com/trickylab/envii/internal/crypto"
+	"github.com/trickylab/envii/internal/model"
 )
 
 // ErrNotFound is returned when no vault file exists yet.

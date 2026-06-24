@@ -44,10 +44,10 @@ changelog:
 
 brews:
   - repository:
-      owner: Trickster-ID
+      owner: trickylab
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
-    homepage: "https://github.com/Trickster-ID/envii"
+    homepage: "https://github.com/trickylab/envii"
     description: "Encrypted .env & secrets manager with a TUI"
     license: "MIT"
     commit_author:
@@ -56,11 +56,11 @@ brews:
 
 dockers:
   - image_templates:
-      - "ghcr.io/trickster-id/envii:{{ .Version }}"
-      - "ghcr.io/trickster-id/envii:latest"
+      - "ghcr.io/trickylab/envii:{{ .Version }}"
+      - "ghcr.io/trickylab/envii:latest"
     dockerfile: Dockerfile
     build_flag_templates:
-      - "--label=org.opencontainers.image.source=https://github.com/Trickster-ID/envii"
+      - "--label=org.opencontainers.image.source=https://github.com/trickylab/envii"
 
 release:
   prerelease: auto

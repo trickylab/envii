@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Trickster-ID/envii/internal/crypto"
-	"github.com/Trickster-ID/envii/internal/model"
-	"github.com/Trickster-ID/envii/internal/store"
+	"github.com/trickylab/envii/internal/crypto"
+	"github.com/trickylab/envii/internal/model"
+	"github.com/trickylab/envii/internal/store"
 )
 
 func main() {

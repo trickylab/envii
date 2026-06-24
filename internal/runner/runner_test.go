@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/Trickster-ID/envii/internal/model"
+	"github.com/trickylab/envii/internal/model"
 )
 
 func TestDotenv(t *testing.T) {

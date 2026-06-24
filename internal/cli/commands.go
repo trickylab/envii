@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/Trickster-ID/envii/internal/model"
-	"github.com/Trickster-ID/envii/internal/runner"
+	"github.com/trickylab/envii/internal/model"
+	"github.com/trickylab/envii/internal/runner"
 )
 
 // runCmd: envii run <project> <env> -- <command...>

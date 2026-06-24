@@ -10,9 +10,9 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
-	"github.com/Trickster-ID/envii/internal/model"
-	"github.com/Trickster-ID/envii/internal/store"
-	"github.com/Trickster-ID/envii/internal/tui"
+	"github.com/trickylab/envii/internal/model"
+	"github.com/trickylab/envii/internal/store"
+	"github.com/trickylab/envii/internal/tui"
 )
 
 var vaultPath string
