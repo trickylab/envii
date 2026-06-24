@@ -11,3 +11,6 @@ vault.age
 .DS_Store
 .idea/
 .vscode/
+
+# Environment
+**/.env*

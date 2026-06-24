@@ -131,7 +131,7 @@ func (m Model) row(selected bool, text string) string {
 
 func (m Model) help() string {
 	if m.level == levelVars {
-		return "↑/↓ move • esc back • a add • e edit • d del • / search • r reveal • c copy • s save • q quit"
+		return "↑/↓ move • esc back • a add • i import • e edit • d del • / search • r reveal • c copy • s save • q quit"
 	}
 	return "↑/↓ move • enter open • esc back • a add • d delete • / search • s save • q quit"
 }

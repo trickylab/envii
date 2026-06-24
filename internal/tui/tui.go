@@ -4,6 +4,7 @@ package tui
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/atotto/clipboard"
@@ -11,6 +12,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/trickylab/envii/internal/model"
+	"github.com/trickylab/envii/internal/runner"
 	"github.com/trickylab/envii/internal/store"
 )
 
@@ -33,6 +35,7 @@ const (
 	inputAddVarKey
 	inputAddVarValue
 	inputEditValue
+	inputImportFile
 	inputSearch
 	inputConfirmDelete
 )
@@ -123,6 +126,8 @@ func (m Model) updateNav(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.startEdit()
 	case "d":
 		m.startDeleteConfirm()
+	case "i":
+		m.startImport()
 	case "/":
 		m.startSearch()
 	case "r":
@@ -292,6 +297,16 @@ func (m *Model) startEdit() {
 	m.input.Focus()
 }
 
+func (m *Model) startImport() {
+	if m.level != levelVars {
+		return
+	}
+	m.inputMode = inputImportFile
+	m.input.SetValue("")
+	m.input.Placeholder = ".env file path"
+	m.input.Focus()
+}
+
 func (m Model) updateInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "esc":
@@ -357,12 +372,23 @@ func (m Model) commitInput() (tea.Model, tea.Cmd) {
 		}
 	case inputAddVarValue:
 		e := m.currentEnv()
-		e.Vars = append(e.Vars, &model.Var{Key: m.pendingKey, Value: val, Secret: isSecret(m.pendingKey)})
+		e.Vars = append(e.Vars, &model.Var{Key: m.pendingKey, Value: val, Secret: model.IsSecret(m.pendingKey)})
 		m.pendingKey = ""
 		m.dirty = true
 	case inputEditValue:
 		m.currentEnv().Vars[m.vIdx].Value = val
 		m.dirty = true
+	case inputImportFile:
+		m.inputMode = inputNone
+		m.input.Blur()
+		if val == "" {
+			m.errMsg = "import file path cannot be empty"
+			return m, nil
+		}
+		if err := m.importFile(val); err != nil {
+			m.errMsg = err.Error()
+		}
+		return m, nil
 	}
 	m.inputMode = inputNone
 	m.input.Blur()
@@ -404,13 +430,27 @@ func removeAt[T any](s []T, i int) []T {
 	return append(s[:i], s[i+1:]...)
 }
 
-// isSecret guesses whether a key likely holds a secret value.
-func isSecret(key string) bool {
-	k := strings.ToUpper(key)
-	for _, hint := range []string{"SECRET", "TOKEN", "PASSWORD", "KEY", "PRIVATE", "CREDENTIAL", "API"} {
-		if strings.Contains(k, hint) {
-			return true
-		}
+func (m *Model) importFile(path string) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("open %s: %w", path, err)
 	}
-	return false
+	defer f.Close()
+
+	vars, err := runner.ParseDotenv(f)
+	if err != nil {
+		return fmt.Errorf("parse %s: %w", path, err)
+	}
+	if len(vars) == 0 {
+		return fmt.Errorf("%s contains no variables", path)
+	}
+
+	summary := model.ImportVars(m.currentEnv(), vars, false)
+	if summary.Added > 0 {
+		m.dirty = true
+		m.status = fmt.Sprintf("imported %d vars (%d skipped, press s to save)", summary.Added, summary.Skipped)
+		return nil
+	}
+	m.status = fmt.Sprintf("imported 0 vars (%d skipped)", summary.Skipped)
+	return nil
 }
